@@ -1,0 +1,84 @@
+
+ const scrollX = useRef(new Animated.Value(0)).current;
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const flatListRef = useRef<FlatList<any>>(null);
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      let nextIndex = currentIndex + 1;
+
+      if (nextIndex >= ImageSliderOffers.length) {
+        nextIndex = 0; // Loop back to start
+      }
+
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+      setCurrentIndex(nextIndex);
+    }, 4000); // every 4 seconds
+
+    return () => clearInterval(timer);
+  }, [currentIndex]);
+
+
+
+
+
+   ref={flatListRef}
+
+
+
+
+
+ onMomentumScrollEnd={(e) => {
+          // Set index after manual swipe
+          const index = Math.round(e.nativeEvent.contentOffset.x / width);
+          setCurrentIndex(index);
+        }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false }
+        )}
+
+
+
+
+
+
+
+
+<View className="flex-row justify-center mt-3">
+        {ImageSliderOffers.map((_, index) => {
+          const inputRange = [
+            (index - 1) * width,
+            index * width,
+            (index + 1) * width,
+          ];
+
+          const dotWidth = scrollX.interpolate({
+            inputRange,
+            outputRange: [8, 16, 8],
+            extrapolate: "clamp",
+          });
+
+          const opacity = scrollX.interpolate({
+            inputRange,
+            outputRange: [0.3, 1, 0.3],
+            extrapolate: "clamp",
+          });
+
+          return (
+            <Animated.View
+              key={index}
+              style={{
+                width: dotWidth,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: "green",
+                marginHorizontal: 4,
+                opacity,
+              }}
+            />
+          );
+        })}
+      </View>
